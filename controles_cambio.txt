@@ -1,0 +1,87 @@
+Reglas
+10.1.6.62
+admdba05
+sudo su - tronador
+sis 1
+wd
+ad
+
+10.1.6.13
+sudo su - oracle
+cd admin/tron/exp
+cat reglitas.sql
+sp
+@reglitas.sql
+.oraenv
+tron
+sh exp_reglitas.sh
+
+10.1.5.11
+sftp admdba05@10.1.6.13
+sftp> cd /oracle/app/oracle/admin/tron/exp
+sftp> get reglitas.dmp
+sftp> bye
+
+.oraenv
+tron1
+sp
+@reglitas1.sql
+sh imp_reglitas.sh
+sp
+tronador
+@reglitas2
+
+
+
+
+set define off
+set verify off
+alter session set current_schema=OPS$PUMA;
+
+
+
+/u/home/tronador/2/70/R
+/u/home/trontest/2/70/R
+
+
+CB900400
+/u/home/trontest/9/00/B
+/u/home/tronador/9/00/B
+
+CB210008.pco
+/u/home/trontest/2/10/B
+/u/home/tronador/2/10/B
+
+CR230832.cob
+/u/home/trontest/2/30/R
+/u/home/tronador/2/30/R
+
+
+
+CTL´s
+servidor 10.1.6.62
+copiarlo a la carpeta:
+/u/home/trontest/bin
+
+se debe copiar a:
+130.100.1.100
+/u/home/tronador/bin
+
+
+
+jdbc/SoaDoc1
+
+jdbc:oracle:thin:@10.1.6.13:1521:tron
+
+
+
+begin
+exec dbms_stats.gather_database_stats(options=>'gather auto',estimate_percent=>DBMS_STATS.AUTO_SAMPLE_SIZE,method_opt =>'FOR ALL COLUMNS',degree=>6);
+end;
+
+
+EXEC DBMS_STATS.gather_database_stats(method_opt => 'FOR ALL COLUMNS',degree =>6);
+
+
+
+nohup sqlplus username/password@oracleServer @nameOfTheQuery.sql &

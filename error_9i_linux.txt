@@ -1,0 +1,26 @@
+Solution of The Problem:
+------------------
+You need to change the "umask" to the required 022, set the proper permission on $ORACLE_HOME, $ORACLE_HOME/bin directories. In my computer, I ran the following.
+
+1)Log on as root and change permission.
+bash-3.00$ su
+Password:
+# umask 022
+# cd $ORACLE_HOME
+# chmod 755 *
+# cd $ORACLE_BASE/admin/$ORACLE_SID
+# chmod 755 *
+# cd $ORACLE_HOME/bin
+# chmod 6751 oracle
+# exit
+
+2)Log on normal user and log on to database.
+bash-3.00$ sqlplus / as sysdba
+
+SQL*Plus: Release 10.2.0.1.0  Production on Wed May 14 23:40:12 2008
+
+Copyright (c) 1982, 2005, Oracle. All rights reserved.
+
+Connected to:
+Oracle Database 10g Enterprise Edition Release 10.2.0.1.0  Production
+With the Partitioning, OLAP and Data Mining options

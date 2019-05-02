@@ -1,0 +1,206 @@
+1. Consultar ubicación actual de los datafiles.
+
+
+
+
+
+SQL> SELECT FILE_NAME FROM DBA_DATA_FILES;
+
+FILE_NAME
+--------------------------------------------------------------------------------
++DATA/hpdesigner/datafile/users.326.898765453
++DATA/hpdesigner/datafile/undotbs1.325.898765453
++DATA/hpdesigner/datafile/sysaux.324.898765453
++DATA/hpdesigner/datafile/system.323.898765453
++DATA/hpdesigner/datafile/ts_table.dbf
++DATA/hpdesigner/datafile/ts_index.ora
+/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL.DBF
+/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_INDEX.DBF
+/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_LOB.DBF
+
+9 rows selected.
+
+
+
+
+2. Consultar nombre de los Tablespaces.
+
+
+
+
+
+SQL> select NAME from v$tablespace;
+
+NAME
+------------------------------
+SYSTEM
+SYSAUX
+UNDOTBS1
+USERS
+TEMP
+TS_TABLE
+TS_INDEX
+EXSTRMTBL
+EXSTRMTBL_INDEX
+EXSTRMTBL_LOB
+
+10 rows selected.
+
+
+
+
+
+3. LLevar a estado OFFLINE los tablespaces.
+
+
+
+
+
+SQL> alter tablespace EXSTRMTBL offline;
+
+Tablespace altered.
+
+SQL> alter tablespace EXSTRMTBL_INDEX offline;
+
+Tablespace altered.
+
+SQL>  alter tablespace EXSTRMTBL_LOB offline;
+
+Tablespace altered.
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Data Mining
+and Real Application Testing options
+
+
+
+
+
+
+4. Iniciar una sesion en RMAN y lanzar comandos copy.
+
+
+
+
+
+[oracle@BD03SBCC01 ~]$ rman target /
+
+Recovery Manager: Release 11.2.0.3.0 - Production on Wed Jan 23 14:28:24 2019
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: HPDESIGN (DBID=1073099740)
+
+RMAN> copy datafile '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL.DBF' to '+DATA';
+
+Starting backup at 23-JAN-19
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=226 device type=DISK
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00007 name=/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL.DBF
+output file name=+DATA/hpdesigner/datafile/exstrmtbl.7997.998317911 tag=TAG20190123T143149 RECID=1 STAMP=998317918
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:16
+Finished backup at 23-JAN-19
+
+RMAN> copy datafile '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_INDEX.DBF' to '+DATA';
+
+Starting backup at 23-JAN-19
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00008 name=/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_INDEX.DBF
+output file name=+DATA/hpdesigner/datafile/exstrmtbl_index.7998.998317957 tag=TAG20190123T143237 RECID=2 STAMP=998317959
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:03
+Finished backup at 23-JAN-19
+
+RMAN> copy datafile '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_LOB.DBF' to '+DATA';
+
+Starting backup at 23-JAN-19
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00009 name=/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_LOB.DBF
+output file name=+DATA/hpdesigner/datafile/exstrmtbl_lob.7999.998317973 tag=TAG20190123T143251 RECID=3 STAMP=998317984
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:15
+Finished backup at 23-JAN-19
+
+RMAN> exit
+
+
+Recovery Manager complete.
+
+
+
+
+5. Hacer los rename de los archivos físicos.
+
+
+
+
+[oracle@BD03SBCC01 ~]$ sp
+
+SQL*Plus: Release 11.2.0.3.0 Production on Wed Jan 23 14:35:24 2019
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Data Mining
+and Real Application Testing options
+
+SQL> alter database rename file '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL.DBF' to '+DATA/HPDESIGNER/datafile/EXSTRMTBL.7997.998317911';
+
+Database altered.
+
+SQL> alter database rename file '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_INDEX.DBF' to '+DATA/HPDESIGNER/datafile/EXSTRMTBL_INDEX.7998.998317957';
+
+Database altered.
+
+SQL> alter database rename file '/oracle/app/oracle/product/11.2.3/dbhome_1/dbs/EXSTRMTBL_LOB.DBF' to '+DATA/HPDESIGNER/datafile/EXSTRMTBL_LOB.7999.998317973';
+
+Database altered.
+
+
+
+
+6. LLevar a estado ONLINE los tablespaces.
+
+
+
+
+SQL> alter tablespace EXSTRMTBL online;
+
+Tablespace altered.
+
+SQL> alter tablespace EXSTRMTBL_INDEX online;
+
+Tablespace altered.
+
+SQL> alter tablespace EXSTRMTBL_LOB online;
+
+Tablespace altered.
+
+
+
+7. se consulta la nueva ubicacion de los datafiles
+
+
+
+
+SQL> SELECT FILE_NAME FROM DBA_DATA_FILES;
+
+FILE_NAME
+--------------------------------------------------------------------------------
++DATA/hpdesigner/datafile/users.326.898765453
++DATA/hpdesigner/datafile/undotbs1.325.898765453
++DATA/hpdesigner/datafile/sysaux.324.898765453
++DATA/hpdesigner/datafile/system.323.898765453
++DATA/hpdesigner/datafile/ts_table.dbf
++DATA/hpdesigner/datafile/ts_index.ora
++DATA/hpdesigner/datafile/exstrmtbl.7997.998317911
++DATA/hpdesigner/datafile/exstrmtbl_index.7998.998317957
++DATA/hpdesigner/datafile/exstrmtbl_lob.7999.998317973
+
+9 rows selected.
+

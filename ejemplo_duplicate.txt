@@ -1,0 +1,81 @@
+rman <<EOF
+spool log to '/oracle/app/oracle/admin/terceros/create/duplicate_terceros_prod_test.log'
+connect target sys/sys171@terceros_prod
+connect auxiliary sys/sys171@terceros_auxl
+run
+{
+  allocate channel           TAR1 type disk;
+  allocate channel           TAR2 type disk;
+  allocate channel           TAR3 type disk;
+  allocate auxiliary channel DUP1 type disk;
+  allocate auxiliary channel DUP2 type disk;
+  allocate auxiliary channel DUP3 type disk;
+  SET NEWNAME FOR DATABASE              TO '+DATA';
+  SET NEWNAME FOR tempfile  1           TO '+DATA';
+  duplicate target database to terceros from active database NOFILENAMECHECK;
+  release channel TAR1;
+  release channel TAR2;
+  release channel TAR3;
+  release channel DUP1;
+  release channel DUP2;
+  release channel DUP3;
+ }
+EOF
+exit
+
+
+export ORACLE_BASE=/oracle/app/oracle
+export ORACLE_HOME=/oracle/app/oracle/product/11.2.0.3/dbhome_1
+export ORACLE_SID=tron
+export PATH=$PATH:$ORACLE_HOME/bin
+rman <<EOF
+connect target sys/sys171@tron_ppal
+connect auxiliary sys/sys171@tron_rmto2
+spool log to '/oracle/app/oracle/admin/tron/create/duplicate_for_standby.log';
+run
+{
+allocate channel C1 type disk;
+allocate channel C2 type disk;
+allocate channel C3 type disk;
+allocate channel C4 type disk;
+allocate auxiliary channel DUP type disk;
+allocate auxiliary channel DUP2 type disk;
+allocate auxiliary channel DUP3 type disk;
+allocate auxiliary channel DUP4 type disk;
+duplicate target database for standby from active database NOFILENAMECHECK;
+}
+EOF
+
+
+
+
+Alter database recover managed standby database cancel ;
+Alter database recover managed standby database disconnect from session ;
+
+
+backup up the database
+
+rman "target / nocatalog"
+RUN
+{
+ALLOCATE CHANNEL chan_name TYPE DISK;
+BACKUP DATABASE FORMAT 'some_backup_directory%U' TAG before_upgrade;
+BACKUP CURRENT CONTROLFILE FORMAT 'controlfile location and name';
+}
+
+
+STARTUP NOMOUNT
+RUN
+{
+    RESTORE CONTROLFILE FROM 'save_controlfile_location';
+    ALTER DATABASE MOUNT;
+    RESTORE DATABASE FROM TAG before_upgrade
+    ALTER DATABASE OPEN RESETLOGS;
+}
+
+caso IBM in2739710 
+
+
+
+las colas que esten creadas y los servidores de mensajeria dejarlas en el nnuevo
+cuando se baje el dominio se ponga otro puerto de admin

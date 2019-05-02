@@ -1,0 +1,1070 @@
+Cuando se compila un paquete y sale que no puede cargar una unidad de libreria se debe:
+alter system flush shared_pool
+
+select inst_id,count(*) 
+from gv$session 
+where username is not null
+and status = 'ACTIVE'
+group by inst_id;
+
+select inst_id,count(*) 
+from gv$session 
+where username is not null 
+group by inst_id;
+
+
+select username,inst_id,count(*)
+from gv$session 
+where username is not null
+group by username,inst_id order by count(*);
+
+
+select * from v$session where username like '%B9143145%';
+
+
+select sid, serial#, program, machine, sql_id, status, WAIT_TIME_MICRO, event, seconds_in_wait
+from v$session
+where username like '%B9143145%'
+and status='ACTIVE';
+
+
+select p.spid, p.tracefile
+from v$session s, v$process p
+where s.sid IN (5426,7942)
+and s.paddr=p.addr;
+
+
+ALTER SYSTEM KILL SESSION 'sid,serial#';
+ALTER SYSTEM KILL SESSION 'sid,serial#,@inst_id';
+ALTER SYSTEM KILL SESSION 'sid,serial#' IMMEDIATE;
+ALTER SYSTEM DISCONNECT SESSION 'sid,serial#' IMMEDIATE;
+
+SET LINESIZE 100
+COLUMN spid FORMAT A10
+COLUMN username FORMAT A10
+COLUMN program FORMAT A45
+
+SELECT s.inst_id,
+       s.sid,
+       s.serial#,
+       --s.sql_id,
+       p.spid,
+       s.username,
+       s.program
+FROM   gv$session s
+       JOIN gv$process p ON p.addr = s.paddr AND p.inst_id = s.inst_id
+WHERE  s.type != 'BACKGROUND';
+
+   INST_ID        SID    SERIAL# SPID       USERNAME   PROGRAM
+---------- ---------- ---------- ---------- ---------- ---------------------------------------------
+         1         30         15 3859       TEST       sqlplus@oel5-11gr2.localdomain (TNS V1-V3)
+         1         23        287 3834       SYS        sqlplus@oel5-11gr2.localdomain (TNS V1-V3)
+         1         40        387 4663                  oracle@oel5-11gr2.localdomain (J000)
+         1         38        125 4665                  oracle@oel5-11gr2.localdomain (J001)
+
+
+
+sho parameter MAX_DUMP_FILE_SIZE
+SELECT VALUE FROM V$DIAG_INFO WHERE NAME = 'Default Trace File';
+SELECT VALUE FROM V$DIAG_INFO WHERE NAME = 'Diag Trace';
+SELECT PID, PROGRAM, TRACEFILE FROM V$PROCESS;
+
+alter system set max_dump_file_size = '1000M' scope=both sid='*';
+alter system set max_dump_file_size = '10M' scope=both sid='*';
+alter system set max_dump_file_size = '100M' scope=both;
+alter system set max_dump_file_size = '100M' scope=both sid='*';
+
+
+#####borrar objetos de un esquema sin borrar el usuario
+
+SELECT
+    'PROMPT - ' || OBJECT_NAME || '
+' ||
+    'DROP ' || OBJECT_TYPE || ' "' || OBJECT_NAME || '"' ||
+    DECODE(OBJECT_TYPE,
+        'CLUSTER', ' INCLUDING TABLES CASCADE CONSTRAINTS',
+        'OPERATOR', ' FORCE',
+        'TABLE', ' CASCADE CONSTRAINTS PURGE',
+        'TYPE',  ' FORCE',
+        'VIEW', ' CASCADE CONSTRAINTS',
+    '') || ';'
+FROM SYS.DBA_OBJECTS
+WHERE OBJECT_TYPE IN (
+    'CLUSTER', 'CONTEXT', 'DATABASE LINK', 'DIMENSION', 'DIRECTORY', 'FUNCTION', 'INDEX TYPE',
+    'JAVA', 'LIBRARY', 'OPERATOR', 'OUTLINE', 'PACKAGE', 'PROCEDURE',
+    'SEQUENCE', 'SYNONYM', 'TABLE', 'TYPE', 'VIEW','TRIGGER'
+)
+AND OWNER='ECMCLIENT'
+ORDER BY OBJECT_TYPE, OBJECT_NAME;
+
+
+
+
+select d.data_size
+T.temp_size
+R.redo_size
+C.controlfile_size “Database Size in GB” from 
+( select sum(bytes)/1024/1024/1024 data_size from dba_data_files) d
+,( select nvl(sum(bytes),0)/1024/1024/1024 temp_size from dba_temp_files ) t
+,( select sum(bytes)/1024/1024/1024 redo_size from sys.v_$log ) r
+,( select sum(BLOCK_SIZE*FILE_SIZE_BLKS)/1024/1024/1024 controlfile_size from v$controlfile) c;
+
+
+B1018457
+B1070011
+
+
+B9143145
+
+
+select inst_id,count(*) 
+from gv$session 
+where username like '%B1018457%'
+group by inst_id;
+
+select * from v$session where username like '%B1018457%';
+
+
+10.1.5.11 Y 12
+
+home de grid
+/oracle/app/11.2.0/grid/bin
+
+home de oracle
+
+
+
+
+750,46367 trace
+
+EXEC DBMS_SYSTEM.set_sql_trace_in_session(sid=>120, serial#=>3, sql_trace=>TRUE,waits=>TRUE);
+EXEC DBMS_SYSTEM.set_sql_trace_in_session(sid=>120, serial#=>3, sql_trace=>TRUE,waits=>TRUE, binds=>TRUE);
+EXEC DBMS_SYSTEM.set_sql_trace_in_session(sid=>120, serial#=>3, waits=>TRUE, binds=>TRUE);
+EXEC DBMS_SUPPORT.start_trace_in_session(sid=>120, serial=>3, waits=>TRUE, binds=>TRUE);
+/opt/tivoli/tsm/scripts/logs/tsm_full_oracle_tron2_171018_1801.log
+
+
+listar carpertas en ASM
+ls */A*
+
+
+
+
+ORA-29264: unknown or unsupported URL scheme
+Cause: The URL scheme was unknown or unsupported.
+
+Action: Check the URL to make sure that the scheme is valid and supported.
+
+
+
+SALUDARPDBAUTOTRON
+s8a6l4u2d1a3r5p7d9bautotron
+
+GNAEXBD02
+g8n6a4e2x1b3d502
+
+
+SALUDARP_DESA=
+  (DESCRIPTION=
+    (ADDRESS=
+      (PROTOCOL=TCP)
+      (HOST=10.1.1.192)
+      (PORT=1521)
+    )
+    (CONNECT_DATA=
+      (SID=saludarp)
+    )
+  )
+
+  
+  
+  BD0192
+  bd0192
+
+  
+  
+  
+TRON2
+/oracle/app/oracle/diag/rdbms/tron_ppal/tron2/trace/tron2_ora_115946.trc
+/oracle/app/oracle/diag/rdbms/tron_ppal/tron2/trace/tron2_ora_116521.trc
+
+PSAI
+/oracle/app/oracle/diag/rdbms/psai/psai/trace/psai_j000_32300.trc
+
+
+weblogic 44
+/oracle/app/wlogic12c/Oracle/Middleware/user_projects/domains/transversalesprod
+/oracle/app/wlogic12c/Oracle/Middleware/user_projects/domains/transversalesprod/servers/Impresion1/log
+
+weblogic 42
+/oracle/app/wlogic12c/Oracle/Middleware/user_projects/domains/transversalesprod/servers/Transversales1/logs
+
+weblogic 43
+/oracle/app/wlogic12c/Oracle/Middleware/Oracle_Home/user_projects/domains/transversalesprod/servers/Transversales1/logs
+
+
+10.1.5.44 /oracle/app/wlogic12c/Oracle/Middleware/user_projects/domains/transversalesprod/servers/Impresion1/logs (nodo1)
+10.1.5.45 /oracle/app/wlogic12c/Oracle/Middleware/user_projects/domains/transversalesprod/servers/Impresion1_2/logs (nodo2)
+
+
+
+
+/oracle/app/oracle/admin/fina/bdump/diag/rdbms/fina/fina/trace/fina_j000_9324.trc
+trace fina_test
+
+
+
+
+
+COL VALUE FORMAT A90
+COL USER_NAME FORMAT A12
+COL PROXY_NAME FORMAT A12
+COL OBJECT_NAME FORMAT A12
+COL OBJECT_TYPE FORMAT A12
+COL OWNER FORMAT A10
+COL GRANTOR FORMAT A8
+COL PRIVILEGE FORMAT A24
+
+SELECT PROFILE, RESOURCE_NAME, LIMIT
+  FROM DBA_PROFILES
+ WHERE PROFILE = 'DEFAULT' AND RESOURCE_NAME = 'PASSWORD_VERIFY_FUNCTION';
+
+SELECT VALUE
+  FROM V$PARAMETER
+ WHERE UPPER(NAME)='REMOTE_LOGIN_PASSWORDFILE'; 
+
+SELECT USERNAME
+  FROM DBA_USERS
+ WHERE AUTHENTICATION_TYPE = 'EXTERNAL';
+
+SELECT *
+  FROM DBA_ROLE_PRIVS
+ WHERE GRANTED_ROLE='DELETE_CATALOG_ROLE' AND GRANTEE NOT IN ('DBA','SYS');
+
+SELECT *
+  FROM DBA_ROLE_PRIVS
+ WHERE GRANTED_ROLE='SELECT_CATALOG_ROLE'
+   AND GRANTEE NOT IN ('DBA','SYS','IMP_FULL_DATABASE','EXP_FULL_DATABASE','OEM_MONITOR');
+
+SELECT *
+  FROM DBA_ROLE_PRIVS
+ WHERE GRANTED_ROLE='EXECUTE_CATALOG_ROLE'
+   AND GRANTEE NOT IN ('DBA','SYS','IMP_FULL_DATABASE','EXP_FULL_DATABASE');
+
+SELECT GRANTEE, GRANTED_ROLE
+  FROM DBA_ROLE_PRIVS
+ WHERE GRANTED_ROLE='DBA' AND GRANTEE NOT IN ('SYS','SYSTEM');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME='AUD$' AND GRANTEE NOT IN ('DELETE_CATALOG_ROLE');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME='USER_HISTORY$';
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME='LINK$';
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME='USER$';
+
+SELECT *
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME LIKE 'DBA_%'
+   AND GRANTEE NOT IN ('APEX_030200','APPQOSSYS','AQ_ADMINISTRATOR_ROLE',
+                       'CTXSYS','EXFSYS','MDSYS','OLAP_XS_ADMIN','OLAPSYS',
+					   'ORDSYS','OWB$CLIENT','OWBSYS','SELECT_CATALOG_ROLE',
+					   'WM_ADMIN_ROLE','WMSYS','XDBADMIN')
+   AND TABLE_NAME NOT IN ('DBA_SDO_MAPS','DBA_SDO_STYLES','DBA_SDO_THEMES',
+                          'LBACSYS','ADM_PARALLEL_EXECUTE_TASK');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME='SCHEDULER$_CREDENTIAL';
+
+SELECT OWNER,TABLE_NAME
+  FROM ALL_TABLES
+ WHERE OWNER='SYS' AND TABLE_NAME='USER$MIG';
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE LIKE '%ANY%' 
+   AND GRANTEE NOT IN ('AQ_ADMINISTRATOR_ROLE','DBA','DBSNMP',
+                       'EXFSYS','EXP_FULL_DATABASE','IMP_FULL_DATABASE',
+					   'DATAPUMP_IMP_FULL_DATABASE','JAVADEBUGPRIV',
+					   'MDSYS','OEM_MONITOR','OLAPSYS','OLAP_DBA',
+					   'ORACLE_OCM','OWB$CLIENT','OWBSYS','SCHEDULER_ADMIN',
+					   'SPATIAL_CSW_ADMIN_USR','SPATIAL_WFS_ADMIN_USR',
+					   'SYS','SYSMAN','SYSTEM','WMSYS','APEX_030200',
+					   'APEX_040000','APEX_040100','APEX_040200','LBACSYS');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE ADMIN_OPTION='YES'
+   AND GRANTEE NOT IN ('AQ_ADMINISTRATOR_ROLE','DBA','OWBSYS',
+                       'SCHEDULER_ADMIN','SYS','SYSTEM','WMSYS');
+
+SELECT * FROM DBA_ROLE_PRIVS WHERE GRANTEE IN
+       (SELECT PROXY FROM DBA_PROXIES) AND GRANTED_ROLE NOT IN ('CONNECT');
+SELECT * FROM DBA_SYS_PRIVS WHERE GRANTEE IN
+       (SELECT PROXY FROM DBA_PROXIES) AND PRIVILEGE NOT IN ('CREATE SESSION');
+SELECT * FROM DBA_TAB_PRIVS WHERE GRANTEE IN
+       (SELECT PROXY FROM DBA_PROXIES);
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='EXECUTE ANY PROCEDURE' AND GRANTEE='OUTLN';
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='EXECUTE ANY PROCEDURE' AND GRANTEE='DBSNMP';
+
+SELECT ROLE, OWNER, TABLE_NAME, PRIVILEGE
+  FROM ROLE_TAB_PRIVS
+ WHERE OWNER NOT IN ('SYS','SYSTEM','WMSYS’,'SYSMAN','MDSYS','ORDSYS','XDB','WKSYS',
+                     'EXFSYS','OLAPSYS', 'DBSNMP','DMSYS','CTXSYS','WK_TEST','ORDPLUGINS',
+					 'OUTLN',' APEX_030200','ORDDATA');
+
+
+
+
+
+
+SELECT  GRANTEE, OWNER, TABLE_NAME, PRIVILEGE -- UNIQUE GRANTEE
+  FROM DBA_TAB_PRIVS WHERE GRANTEE NOT IN (SELECT ROLE FROM DBA_ROLES) AND GRANTEE NOT IN ('SYS',
+       'SYSTEM','WMSYS','SYSMAN','MDSYS','ORDSYS','XDB','WKSYS', 'EXFSYS','OLAPSYS', 'DBSNMP',
+	   'DMSYS','CTXSYS','WK_TEST','ORDPLUGINS','OUTLN',' APEX_030200','ORDDATA','PUBLIC',
+	   'SPATIAL_WFS_ADMIN_USR','OWBSYS','SPATIAL_CSW_ADMIN_USR','MGMT_VIEW','FLOWS_FILES',
+	   'ORACLE_OCM','APEX_030200','APEX_PUBLIC_USER','APPQOSSYS','ANONYMOUS');
+
+
+
+SELECT USERNAME, ACCOUNT_STATUS, PROFILE
+  FROM DBA_USERS
+ WHERE USERNAME IN ( 'BI','HR','OE','PM','IX','SH','SCOTT');
+
+
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_ADVISOR' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_CRYPTO';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME IN ( 'DBMS_JAVA','DBMS_JAVA_TEST') AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_JOB' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_LDAP' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_LOB' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_OBFUSCATION_TOOLKIT' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_RANDOM' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_SCHEDULER' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_SQL' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_XMLGEN' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_XMLQUERY' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_FILE' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_INADDR' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_TCP' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_MAIL' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_SMTP' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_DBWS' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'UTL_HTTP' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_SYS_SQL' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_BACKUP_RESTORE' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, TABLE_NAME
+  FROM DBA_TAB_PRIVS
+ WHERE TABLE_NAME = 'DBMS_FILE_TRANSFER' AND GRANTEE = 'PUBLIC';
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='SELECT ANY DICTIONARY' AND GRANTEE NOT IN
+ ('DBA','DBSNMP','OEM_MONITOR','OLAPSYS','ORACLE_OCM','SYSMAN','WMSYS');
+
+SELECT GRANTEE, PRIVILEGE
+ FROM DBA_SYS_PRIVS WHERE PRIVILEGE='SELECT ANY TABLE';
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='AUDIT SYSTEM' AND GRANTEE NOT IN
+ ('DBA','DATAPUMP_IMP_FULL_DATABASE','IMP_FULL_DATABASE','SYS');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='EXEMPT ACCESS POLICY';
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='BECOME USER' AND GRANTEE NOT IN ('DBA','SYS','IMP_FULL_DATABASE');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='CREATE PROCEDURE' AND GRANTEE NOT IN
+ ('DBA','DBSNMP','MDSYS','OLAPSYS','OWB$CLIENT','OWBSYS','RECOVERY_CATALOG_OWNER',
+  'SPATIAL_CSW_ADMIN_USR','SPATIAL_WFS_ADMIN_USR','SYS','APEX_030200','APEX_040000',
+  'APEX_040100','APEX_040200');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='ALTER SYSTEM' AND GRANTEE NOT IN
+ ('SYS','DBA','SYSTEM','APEX_030200','APEX_040000','APEX_040100','APEX_040200');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE (PRIVILEGE='CREATE LIBRARY' OR PRIVILEGE='CREATE ANY LIBRARY')
+   AND GRANTEE NOT IN ('SYS','SYSTEM','DBA');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='GRANT ANY OBJECT PRIVILEGE' AND GRANTEE NOT IN
+ ('DBA','SYS','IMP_FULL_DATABASE','DATAPUMP_IMP_FULL_DATABASE');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='GRANT ANY ROLE' AND GRANTEE NOT IN
+ ('DBA','SYS','DATAPUMP_IMP_FULL_DATABASE','IMP_FULL_DATABASE','SPATIAL_WFS_ADMIN_USR',
+  'SPATIAL_CSW_ADMIN_USR');
+
+SELECT *
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='GRANT ANY PRIVILEGE' AND GRANTEE NOT IN
+ ('DBA','SYS','IMP_FULL_DATABASE','DATAPUMP_IMP_FULL_DATABASE');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='SYSBACKUP' AND GRANTEE NOT IN ('SYS','DBA','SYSTEM', 'OSBACKUP');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='SYSDG' AND GRANTEE NOT IN ('SYS','DBA','SYSTEM', 'OSDG');
+
+SELECT GRANTEE, PRIVILEGE
+  FROM DBA_SYS_PRIVS
+ WHERE PRIVILEGE='SYSKM' AND GRANTEE NOT IN ('SYS','DBA','SYSTEM', 'OSKM');
+
+-- grep -i SECURE_CONTROL $ORACLE_HOME/network/admin/listener.ora
+-- grep -i extproc $ORACLE_HOME/network/admin/listener.ora
+-- grep -i PORT $ORACLE_HOME/network/admin/listener.ora
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='GLOBAL_NAMES';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='LOCAL_LISTENER';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='OS_ROLES';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='REMOTE_LISTENER';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='REMOTE_OS_AUTHENT';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='REMOTE_OS_ROLES';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='UTL_FILE_DIR';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='SEC_MAX_FAILED_LOGIN_ATTEMPTS';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='SEC_PROTOCOL_ERROR_FURTHER_ACTION';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='SEC_PROTOCOL_ERROR_TRACE_ACTION';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='SEC_RETURN_SERVER_RELEASE_BANNER';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='SQL92_SECURITY';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='_TRACE_FILES_PUBLIC';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='AUDIT_TRAIL';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='CREATE SESSION';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('CREATE USER','USER');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('ALTER USER', 'USER');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('DROP USER', 'USER');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('ROLE');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION='SYSTEM GRANT';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('CREATE PROFILE','PROFILE');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('ALTER PROFILE','PROFILE');
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('DROP PROFILE','PROFILE');
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION='DATABASE LINK';
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION='PUBLIC DATABASE LINK';
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('PUBLIC SYNONYM','SYNONYM');
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION='SELECT ANY DICTIONARY';
+
+SELECT * FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='GRANT ANY OBJECT PRIVILEGE';
+
+SELECT * FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='GRANT ANY PRIVILEGE';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='CREATE PROCEDURE';
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION = 'CREATE ANY PROCEDURE';
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION IN ('ALTER ANY PROCEDURE','DROP ANY PROCEDURE');
+
+SELECT * FROM DBA_STMT_AUDIT_OPTS
+ WHERE AUDIT_OPTION='PROCEDURE' OR AUDIT_OPTION = 'CREATE ANY LIBRARY'
+    OR AUDIT_OPTION = 'CREATE LIBRARY';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='DROP ANY LIBRARY';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE IN ('CREATE ANY TRIGGER','ALTER ANY TRIGGER','DROP ANY TRIGGER');
+
+SELECT * FROM DBA_OBJ_AUDIT_OPTS
+ WHERE OBJECT_NAME='AUD$';
+
+SELECT USER_NAME, SUCCESS, FAILURE FROM DBA_PRIV_AUDIT_OPTS
+ WHERE PRIVILEGE='ALTER SYSTEM';
+
+SELECT VALUE FROM V$PARAMETER
+ WHERE UPPER(NAME)='AUDIT_SYS_OPERATIONS';
+
+
+ 
+SELECT THREAD# Thread,SEQUENCE# Last_Sequence_Generated
+ FROM V$ARCHIVED_LOG
+          WHERE (THREAD#,FIRST_TIME ) IN (SELECT THREAD#,MAX(FIRST_TIME) FROM V$ARCHIVED_LOG GROUP BY THREAD#)
+          ORDER BY 1; 
+		  
+
+SELECT ARCH.THREAD# "Thread", ARCH.SEQUENCE# "Last Sequence Received",
+APPL.SEQUENCE# "Last Sequence Applied", (ARCH.SEQUENCE# - APPL.SEQUENCE#) "Difference"
+FROM
+(SELECT THREAD# ,SEQUENCE# FROM V$ARCHIVED_LOG WHERE (THREAD#,FIRST_TIME ) IN
+(SELECT THREAD#,MAX(FIRST_TIME) FROM V$ARCHIVED_LOG GROUP BY THREAD#)) ARCH,
+(SELECT THREAD# ,SEQUENCE# FROM V$LOG_HISTORY WHERE (THREAD#,FIRST_TIME ) IN
+(SELECT THREAD#,MAX(FIRST_TIME) FROM V$LOG_HISTORY GROUP BY THREAD#)) APPL
+WHERE
+ARCH.THREAD# = APPL.THREAD#
+ORDER BY 1;
+
+SELECT THREAD#, SEQUENCE#, ARCHIVED, STATUS FROM V$LOG;
+SELECT MAX(SEQUENCE#), THREAD# FROM V$ARCHIVED_LOG GROUP BY THREAD#;
+SELECT DESTINATION, STATUS, ARCHIVED_THREAD#, ARCHIVED_SEQ# FROM V$ARCHIVE_DEST_STATUS WHERE STATUS <> 'DEFERRED' AND STATUS <> 'INACTIVE';
+select process,client_process,sequence#,status from v$managed_standby;
+SELECT name, value, time_computed FROM V$DATAGUARD_STATS WHERE name like 'apply lag';
+--SELECT * FROM V$STANDBY_EVENT_HISTOGRAM WHERE NAME = 'apply lag' AND COUNT > 0;
+SELECT PROTECTION_MODE, PROTECTION_LEVEL, DATABASE_ROLE ROLE, SWITCHOVER_STATUS FROM V$DATABASE;
+SELECT FS_FAILOVER_STATUS "FSFO STATUS", FS_FAILOVER_CURRENT_TARGET TARGET, FS_FAILOVER_THRESHOLD THRESHOLD, FS_FAILOVER_OBSERVER_PRESENT "OBSERVER PRESENT" FROM V$DATABASE;
+SELECT PROCESS, STATUS, THREAD#, SEQUENCE#,BLOCK#, BLOCKS FROM V$MANAGED_STANDBY;
+SELECT * FROM V$MANAGED_STANDBY;
+select group#,thread#,sequence#,used,status from v$standby_log;
+
+select open_mode, DATABASE_ROLE from V$DATABASE; 
+
+show parameter log_archive_dest_2
+show parameter LOG_ARCHIVE_MAX_PROCESSES
+
+CREATE TEMPORARY TABLESPACE TEMP TEMPFILE '+DATA' SIZE 100M AUTOEXTEND ON NEXT 100M MAXSIZE UNLIMITED EXTENT MANAGEMENT LOCAL UNIFORM SIZE 10M SEGMENT SPACE MANAGEMENT MANUAL;
+CREATE TEMPORARY TABLESPACE TEMP TEMPFILE '+DATATRONCONT' SIZE 100M AUTOEXTEND ON NEXT 100M MAXSIZE UNLIMITED EXTENT MANAGEMENT LOCAL UNIFORM SIZE 10M SEGMENT SPACE MANAGEMENT MANUAL;
+ ALTER TABLESPACE TEMP2 ADD TEMPFILE '+DATA' SIZE 1G AUTOEXTEND ON NEXT 512M MAXSIZE 32767M;
+  ALTER TABLESPACE TEMP ADD TEMPFILE '+DATA' SIZE 1G AUTOEXTEND ON NEXT 1000M MAXSIZE 32767M;
+DROP tablespace temp2 including contents and datafiles;
+
+
+CREATE TEMPORARY TABLESPACE TEMP2 TEMPFILE '+DATATRON' SIZE 200M AUTOEXTEND ON NEXT 1000M MAXSIZE UNLIMITED EXTENT MANAGEMENT LOCAL UNIFORM SIZE 100M SEGMENT SPACE MANAGEMENT MANUAL;
+alter database default temporary tablespace temp2;
+DROP tablespace temp including contents and datafiles;
+
+ALTER DATABASE TEMPFILE '+DATATRONCONT/tron/datafile/data_d-tron_ts-temp_fno-1' DROP INCLUDING DATAFILES;
+ALTER DATABASE TEMPFILE '+DATATRONCONT/tron/tempfile/temp.530.951241847' DROP INCLUDING DATAFILES;
+ALTER DATABASE TEMPFILE '+DATATRON/tron/tempfile/temp.271.989660855' DROP INCLUDING DATAFILES;
+ALTER TABLESPACE UNDOTBS2 DROP DATAFILE '+DATATRON/tron/datafile/undotbs2.351.989654465'
+
+ALTER DATABASE TEMPFILE '+DATATRONCONT/tron/tempfile/temp.530.951241847' DROP INCLUDING DATAFILES;
+
+
+CREATE TABLESPACE TS_INDEX_P DATAFILE 
+  '+DATA' SIZE 5000M AUTOEXTEND ON NEXT 500M MAXSIZE 32000M
+LOGGING
+ONLINE
+EXTENT MANAGEMENT LOCAL UNIFORM SIZE 128K
+BLOCKSIZE 8K
+SEGMENT SPACE MANAGEMENT AUTO
+;
+
+
+CREATE TABLESPACE TS_TABLE_P DATAFILE 
+  '+DATA' SIZE 2000M AUTOEXTEND ON NEXT 500M MAXSIZE 32000M
+LOGGING
+DEFAULT 
+  NO INMEMORY
+ONLINE
+EXTENT MANAGEMENT LOCAL UNIFORM SIZE 4M
+BLOCKSIZE 8K
+SEGMENT SPACE MANAGEMENT AUTO
+FLASHBACK ON;
+
+
+CREATE TABLESPACE TS_INDEX_P DATAFILE 
+  '+DATA' SIZE 2000M AUTOEXTEND ON NEXT 500M MAXSIZE 32000M
+LOGGING
+DEFAULT 
+  NO INMEMORY
+ONLINE
+EXTENT MANAGEMENT LOCAL UNIFORM SIZE 4M
+BLOCKSIZE 8K
+SEGMENT SPACE MANAGEMENT AUTO
+FLASHBACK ON;
+
+
+CREATE TABLESPACE TS_TABLE_P DATAFILE 
+  '+DATA' SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 32000M
+LOGGING
+DEFAULT 
+  NO INMEMORY
+ONLINE
+EXTENT MANAGEMENT LOCAL UNIFORM SIZE 4M
+BLOCKSIZE 8K
+SEGMENT SPACE MANAGEMENT AUTO
+FLASHBACK ON;
+
+
+CREATE TABLESPACE TS_INDEX_P DATAFILE 
+  '+DATA' SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE 32000M
+LOGGING
+DEFAULT 
+  NO INMEMORY
+ONLINE
+EXTENT MANAGEMENT LOCAL UNIFORM SIZE 4M
+BLOCKSIZE 8K
+SEGMENT SPACE MANAGEMENT AUTO
+FLASHBACK ON;
+
+
+CREATE USER CRYPTOVAULT
+  IDENTIFIED BY "crypto2019*"
+  DEFAULT TABLESPACE TS_TABLE_P
+  TEMPORARY TABLESPACE TEMP
+--  PROFILE SIB_POL_USU_PROPIETARIO
+  ACCOUNT UNLOCK;
+
+-- 1 Role for CRYPTOVAULT 
+--GRANT ROL_USR_ANALITICA TO CRYPTOVAULT;
+ALTER USER CRYPTOVAULT DEFAULT ROLE ALL;
+
+-- 1 System Privilege for CRYPTOVAULT 
+GRANT CREATE SESSION TO CRYPTOVAULT;
+GRANT CONNECT,RESOURCE TO CRYPTOVAULT;
+GRABT UNLIMITED TABLESPACE TO CRYPTOVAULT;
+
+
+create undo tablespace UNDOTBS DATAFILE '+DATATRON' SIZE 1G;
+ALTER SYSTEM SET UNDO_TABLESPACE=UNDOTBS1;
+ALTER TABLESPACE UNDOTBS ADD DATAFILE '+DATATRON' SIZE 1G AUTOEXTEND ON NEXT 1000M MAXSIZE 32767M;
+DROP tablespace undotbs2 including contents and datafiles;
+
+ALTER DISKGROUP DATA DROP  DISK 'DSKD033','DSKD034','DSKD035','DSKD036','DSKD037','DSKD038','DSKD039','DSKD040','DSKD041','DSKD042'
+alter diskgroup data rebalance power 8;
+Select operation, state, power, est_rate, est_minutes, round((sofar/EST_WORK)*100,2) pct_comp  From v$asm_operation;
+
+ALTER DISKGROUP DATATRON ADD  DISK 
+'ORCL:DSKD043' SIZE 131071M ,
+'ORCL:DSKD044' SIZE 131071M ,
+'ORCL:DSKD045' SIZE 131071M ,
+'ORCL:DSKD046' SIZE 131071M ,
+'ORCL:DSKD047' SIZE 131069M ,
+'ORCL:DSKD048' SIZE 131069M ,
+'ORCL:DSKD049' SIZE 131069M ,
+'ORCL:DSKD050' SIZE 131069M ,
+'ORCL:DSKD051' SIZE 131069M ,
+'ORCL:DSKD052' SIZE 131069M ,
+'ORCL:DSKD053' SIZE 131069M ,
+'ORCL:DSKD054' SIZE 131069M ,
+'ORCL:DSKD055' SIZE 131069M ,
+'ORCL:DSKD056' SIZE 131069M ,
+'ORCL:DSKD057' SIZE 131069M ,
+'ORCL:DSKD058' SIZE 131069M ,
+'ORCL:DSKD059' SIZE 131069M ,
+'ORCL:DSKD060' SIZE 131069M ,
+'ORCL:DSKD061' SIZE 131069M 
+
+
+
+/dev/oracleasm/disks/DATATRONSSD001
+
+
+
+
+DELETE NOPROMPT ARCHIVELOG ALL COMPLETED BEFORE 'sysdate-2';
+
+select round(sum(bytes)/1024/1024/1024) GB from dba_data_files;
+
+
+###cuando no deja borrar un UNDOTBS
+ALTER SYSTEM SET UNDO_TABLESPACE=UNDOTBS1 scope=both;
+select tablespace_name, owner, segment_name, status from dba_rollback_segs where TABLESPACE_NAME='UNDOTBS2' and status='ONLINE';
+select SID, substr(username,1,10) username,serial#,segment_name from v$transaction,dba_rollback_segs,v$session where 
+saddr=ses_addr and xidusn=segment_id
+and segment_name in
+('_SYSSMU37_53630548$'
+,'_SYSSMU74_1368317919$'
+)
+
+
+###tablas mas grandes
+SELECT tablespace_name, MAX(BYTES/1024/1024/1024) TAMAÑO_GB, 
+   MAX(SEGMENT_NAME) KEEP (DENSE_RANK LAST ORDER BY BYTES)  
+FROM dba_segments 
+WHERE SEGMENT_TYPE = 'TABLE' 
+GROUP BY tablespace_name
+order by 2 desc;
+
+
+
+SELECT 
+    tablespace_name,segment_name,tab_size_gb
+FROM    
+(
+    SELECT
+    tablespace_name,segment_name,bytes/1024/1024/1024 tab_size_gb,
+    RANK() OVER (PARTITION BY tablespace_name ORDER BY bytes DESC) AS rnk
+    FROM dba_segments
+    WHERE segment_type='TABLE'
+)
+WHERE rnk=1;
+
+
+Task: Disable firewall
+Type the following command as the root user to disable firewall for IPv4:
+# service iptables save
+# service iptables stop
+# chkconfig iptables off
+
+
+###################TABLESPACES
+set pages 1000
+set lines 500
+break on report
+compute sum of CURR_SIZE_MB on report
+compute sum of Used_MB on report
+compute sum of MAXSIZE_MB on report
+compute sum of Free+extendable_MB on report
+col TABLESPACE_NAME for a30
+col file_name for a45
+select
+   a.TABLESPACE_NAME,
+   round(avail,1) curr_size_MB,
+   round(used,1) used_MB,
+   round(total,1) Maxsize_MB,
+   round(free+extentable_MB,1) "Free+extendable_MB",
+   round(100*(1-(free+extentable_MB)/total),1)"Usage %"
+from (
+      select
+        TABLESPACE_NAME,
+        sum(BYTES)/(1024*1024) avail,
+        sum(MAXBYTES)/(1024*1024) total,
+        (sum(MAXBYTES)/(1024*1024) - sum(BYTES)/(1024*1024)) extentable_MB
+      from dba_data_files
+      group by TABLESPACE_NAME) a,
+     (
+      select
+         TABLESPACE_NAME,
+         sum(BYTES)/(1024*1024) free
+      from dba_free_space group by TABLESPACE_NAME) b,
+     (
+      select
+         TABLESPACE_NAME,
+         BYTES/(1024*1024) Used
+      from sm$ts_used) c
+where a.TABLESPACE_NAME=b.TABLESPACE_NAME and
+      a.TABLESPACE_NAME=c.TABLESPACE_NAME
+order by 4 DESC;
+
+
+################TEMP
+SELECT df.tablespace_name "TABLESPACE", ROUND ( (df.bytes - SUM (fs.bytes)) * 100 / df.bytes, 2) "USED" 
+FROM (SELECT TABLESPACE_NAME,BYTES 
+FROM sys.sm$ts_free fs 
+UNION ALL 
+SELECT TABLESPACE_NAME,FREE_SPACE 
+FROM DBA_TEMP_FREE_SPACE ) FS, 
+(SELECT tablespace_name, SUM (bytes) bytes 
+FROM sys.sm$ts_avail 
+GROUP BY tablespace_name 
+UNION ALL 
+SELECT TABLESPACE_NAME, SUM(bytes) 
+FROM SYS.DBA_TEMP_FILES GROUP BY tablespace_name ) df 
+WHERE fs.tablespace_name(+) = df.tablespace_name AND df.tablespace_name = '{0}' 
+GROUP BY df.tablespace_name,df.bytes 
+ORDER BY 1;
+
+
+#############################
+SELECT tablespace_name,
+   SUM (mbtotal) / 1024 / 1024 mbtotal,
+   SUM ( mbtotal - mblibre) / 1024 / 1024 mbusado,
+   SUM (mblibre) / 1024 / 1024 mblibre,
+   round(((SUM ( mbtotal - mblibre) / 1024 / 1024) * 100) / (SUM (mbtotal) / 1024 / 1024), 2) Porc_ocu,
+   round(((SUM (mblibre) / 1024 / 1024) *100) / (SUM (mbtotal) / 1024 / 1024),2) Porc_libre
+ FROM (SELECT tablespace_name, bytes mbtotal, 0 mblibre
+         FROM dba_data_files
+        UNION ALL
+       SELECT tablespace_name, 0 mbtotal, bytes mblibre
+         FROM dba_free_space)
+ GROUP BY tablespace_name
+ UNION ALL
+ SELECT TABLESPACE_NAME, SUM (MBtotales)/1024/1024 MBtotales, SUM (MBtotales-MBlibre)/1024/1024 MBusado, SUM(MBlibre)/1024/1024 MBlibre,
+      round(((SUM ( MBtotales - MBlibre) / 1024 / 1024) * 100) / (SUM (MBtotales) / 1024 / 1024), 2) Porc_ocu,
+      round(((SUM (MBlibre) / 1024 / 1024) *100) / (SUM (MBtotales) / 1024 / 1024),2) Porc_libre
+ FROM (SELECT tablespace_name, bytes MBtotales, 0 MBlibre
+         FROM sys.dba_temp_files
+        UNION ALL
+       SELECT tablespace_name, 0 MBtotales, FREE_SPACE MBlibre
+         FROM dba_temp_free_space)
+ GROUP BY tablespace_name
+ order by 6;
+
+
+ 
+select * from (
+SELECT
+h.event Wait_Event,
+SUM(h.wait_time + h.time_waited)/1000000 Total_Wait_Time
+FROM
+v$active_session_history h,
+v$event_name e
+WHERE
+h.sample_time < (select max(sample_time) from v$active_session_history)
+and h.sample_time > (select max(sample_time)-1/24 from v$active_session_history)
+AND h.event_id = e.event_id
+AND e.wait_class <>'Idle'
+GROUP BY h.event
+ORDER BY 2 DESC)
+where rownum <10;
+
+
+
+SELECT
+a.sql_text,
+SUM(h.wait_time + h.time_waited)/1000000 Total_Wait_Time
+FROM
+v$active_session_history h,
+v$event_name e,
+v$sqlarea a
+WHERE
+h.sample_time < (select max(sample_time) from v$active_session_history)
+and h.sample_time > (select max(sample_time)-1/24 from v$active_session_history)
+AND h.event_id = e.event_id
+and h.sql_id=a.sql_id
+AND e.wait_class <> 'Idle'
+and event in ('enq: DX – contention','inactive transaction branch')
+group by a.sql_text
+ORDER BY 2 asc;
+
+
+
+
+
+SELECT /* + RULE */  df.tablespace_name "Tablespace",
+       df.bytes / (1024 * 1024) "Size (MB)",
+       SUM(fs.bytes) / (1024 * 1024) "Free (MB)",
+       Nvl(Round(SUM(fs.bytes) * 100 / df.bytes),1) "% Free",
+       Round((df.bytes - SUM(fs.bytes)) * 100 / df.bytes) "% Used"
+  FROM dba_free_space fs,
+       (SELECT tablespace_name,SUM(bytes) bytes
+          FROM dba_data_files
+         GROUP BY tablespace_name) df
+ WHERE fs.tablespace_name (+)  = df.tablespace_name
+ GROUP BY df.tablespace_name,df.bytes
+UNION ALL
+SELECT /* + RULE */ df.tablespace_name tspace,
+       fs.bytes / (1024 * 1024),
+       SUM(df.bytes_free) / (1024 * 1024),
+       Nvl(Round((SUM(fs.bytes) - df.bytes_used) * 100 / fs.bytes), 1),
+       Round((SUM(fs.bytes) - df.bytes_free) * 100 / fs.bytes)
+  FROM dba_temp_files fs,
+       (SELECT tablespace_name,bytes_free,bytes_used
+          FROM v$temp_space_header
+         GROUP BY tablespace_name,bytes_free,bytes_used) df
+ WHERE fs.tablespace_name (+)  = df.tablespace_name
+ GROUP BY df.tablespace_name,fs.bytes,df.bytes_free,df.bytes_used
+ ORDER BY 4 DESC;
+ 
+ 
+ 
+   
+ALTER TABLESPACE TS_TABLE_M ADD DATAFILE '+DATA' SIZE 50M AUTOEXTEND ON NEXT 100M MAXSIZE UNLIMITED;
+ALTER TABLESPACE TEMP2 ADD TEMPFILE '+DATA' SIZE 1G AUTOEXTEND ON NEXT 512M MAXSIZE 32767M; 
+ 
+ 
+
+orapki wallet create -wallet /Oracle/app/ora11g/certificado/wallet10/ -pwd wallet10 -auto_login
+orapki wallet add -wallet /Oracle/app/ora11g/certificado/wallet10 -trusted_cert -cert "/Oracle/app/ora11g/certificado/wallet10/certificado.cer" -pwd wallet10
+orapki wallet add -wallet /Oracle/app/ora11g/certificado/wallet10 -trusted_cert -cert certificado.cer -pwd wallet10
+
+rm -rf wallet10
+ls
+mkdir wallet10
+ls
+cd wallet10/
+ls
+pwd
+orapki wallet create -wallet /Oracle/app/ora11g/certificado/wallet10 -pwd wallet10 -auto_login
+pwd
+ls
+orapki wallet add -wallet /Oracle/app/ora11g/certificado/wallet10 -trusted_cert -cert "/Oracle/app/ora11g/certificado/wallet10/certificado.cer" -pwd wallet10
+
+
+find . -name '*.trc' -mtime +2 -exec rm {} \;
+
+
+130.100.181.108 beta
+/Oracle/app/oracle/wls_asiste_bol/domains/WLP12110JR6_ASISTE_BOL_PRUEBA/bin
+nohup ./startManagedWebLogic.sh PlataformaServicios &
+nohup ./startManagedWebLogic.sh PlataformaWebTier &
+
+
+########EXPORT PARFILE
+
+expdp "'/ as sysdba'" parfile=/home/oracle/exp/C8299163.par
+ 
+ 
+tables='ops$puma.C8299163'
+directory=dir_backups
+dumpfile=C8299163.dmp
+logfile=C8299163.log
+query=ops$puma.C8299163:"where a.FECHA_CIERRE >=to_date('20160101','YYYYMMDD') and FECHA_CIERRE <=to_date('20160301','YYYYMMDD')"
+
+
+
+#REINICIAR CONTINGENCIA
+
+
+•	recover managed standby database cancel;
+•	shutdown immediate;
+•	startup nomount;
+    ALTER DATABASE MOUNT STANDBY DATABASE;
+•	alter database open read only;
+•	recover managed standby database disconnect using current logfile;
+
+
+•	SELECT database_role, open_mode FROM v$database;
+
+
+Debe quedar en el siguiente estado:
+
+
+DATABASE_ROLE    OPEN_MODE
+---------------- --------------------
+PHYSICAL STANDBY READ ONLY WITH APPLY
+
+
+
+
+ORA-16003: standby database is restricted to read-only access
+
+
+
+10.1.5.9
+cryptovault
+
+coonnect, resource
+
+
+
+
+
+
+

@@ -1,0 +1,154 @@
+RMAN-06094 or RMAN-06571 During Recovery or Switch to Copy at Standby Site (Doc ID 1339439.1)	To BottomTo Bottom	
+
+In this Document
+Symptoms
+Changes
+Cause
+Solution
+
+APPLIES TO:
+Oracle Database - Enterprise Edition
+Information in this document applies to any platform.
+SYMPTOMS
+When trying to recover the database from an incremental backup, the following error is encountered:
+
+RMAN> RECOVER DATABASE NOREDO;
+
+Starting recover at 18 JUL 2011 18:12:10
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: sid=267 devtype=DISK
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of recover command at 07/18/2011 18:12:11
+RMAN-06094: datafile 1 must be restored
+
+
+
+Further, there doesn't appear to be a valid copy of the datafiles to use:
+
+
+
+
+RMAN> SWITCH DATABASE TO COPY;
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of switch to copy command at 07/18/2011 17:10:17
+RMAN-06571: datafile 1 does not have recoverable copy
+
+
+
+
+
+Note: Even though the above is reporting errors on datafile 1, this is not necessarily the full extent of the problem. 
+Rather than printing an error message for each file in question (imagine a system with five thousand or more datafiles!), 
+RMAN is only showing you the first file with a problem.
+
+
+
+
+CHANGES
+The errors RMAN-06094 or RMAN-06571 can be encountered after recreating the standby controlfile, where datafiles 
+at the primary site reside in a different directory to the standby site.
+
+
+CAUSE
+
+When a standby controlfile is recreated, by restoring it from the primary site, the datafile names as shown 
+in v$datafile and RMAN's REPORT SCHEMA will actually reflect those of the primary database rather than the standby database. 
+
+
+RMAN> report schema;
+
+
+
+Look at the SIZE and NAME columns. The SIZE of 0 is a good indication that the file does not physically exist on disk. 
+
+For example:
+
+
+File Size(MB) Tablespace           RB segs Datafile Name
+---- -------- ----------------- ------- ------------------------
+1    0         SYSTEM            ***     +DG1/prod/datafile/system.423.756840583
+2    0         UNDOTBS1          ***     +DG1/prod/datafil/undotbs1.258.667475049
+3    0         SYSAUX            ***     +DG1/prod/datafil/sysaux.257.667475049
+4    0         USERS             ***     +DG1/prod/datafile/users.259.667475049
+
+
+ASMCMD> ls -lt +DG1/prod/datafile/system.423.756840583
+asmcmd: entry 'prod' does not exist in directory '+DG1/'
+
+
+SOLUTION
+
+Often the datafiles do actually reside on disk in either a different directory or filename. So you just need to tell RMAN where they are.
+
+
+1) If the datafiles are all in the same directory path, you can catalog them all with one command:
+
+
+RMAN> catalog start with 'full pathname';
+catalog start with '+DATATRONCONT/tron/datafile';
+
+
+Otherwise, to catalog an individual datafile:
+
+
+RMAN> catalog datafilecopy 'full path filename';
+
+
+
+2) Confirm that RMAN knows about the newly cataloged datafile copies:
+
+RMAN> list copy of database;
+
+RMAN> list copy of datafile n;
+eg.
+RMAN> list copy of datafile 1;
+
+OR to list multiple copies:
+RMAN> list copy of datafile 1,2,3,4;
+
+
+3) Rename the datafiles to the correct copy on disk
+
+a) If all datafiles needs to be renamed:
+
+
+RMAN> switch database to copy;
+
+
+b) If only renaming a single datafile:
+
+
+RMAN> switch datafile n to copy;
+eg.
+RMAN> switch datafile 1 to copy;
+
+c) If renaming a list of files:
+
+
+RMAN> switch datafile n,o,p,q to copy;
+eg.
+RMAN> switch datafile 1,2,3,4 to copy;
+ 
+
+  d) to rename to a specific copy:
+
+RMAN> run {
+switch datafile 'old datafile path and name' to datafilecopy 'new datafile path and name';
+}
+  
+4) The controlfile should now reflect the real datafiles on disk, with their correct size and names.
+
+
+RMAN> report schema; 
+
+File Size(MB) Tablespace           RB segs Datafile Name
+---- -------- ----------------- ------- ------------------------
+1    500       SYSTEM           ***     +DG1/stby/datafile/system.423.756840583
+2    200       UNDOTBS1         ***     +DG1/stby/datafile/undotbs1.258.667475049
+3    350       SYSAUX           ***     +DG1/stby/datafile/sysaux.257.756996199
+4    545       USERS            ***     +DG1/stby/datafile/users.259.756996261

@@ -1,0 +1,35 @@
+select l1.sid, ' IS BLOCKING ', l2.sid
+  from v$lock l1, v$lock l2
+  where l1.block =1 and l2.request > 0
+  and l1.id1=l2.id1
+  and l1.id2=l2.id2;
+  
+  
+  SELECT
+  decode(L.TYPE,'TM','TABLE','TX','Record(s)') TYPE_LOCK,
+  decode(L.REQUEST,0,'NO','YES') WAIT,
+  S.OSUSER OSUSER_LOCKER,
+  S.PROCESS PROCESS_LOCKER,
+  S.USERNAME DBUSER_LOCKER,
+  O.OBJECT_NAME OBJECT_NAME,
+  O.OBJECT_TYPE OBJECT_TYPE,
+  concat(' ',s.PROGRAM) PROGRAM,
+  O.OWNER OWNER
+FROM v$lock l,dba_objects o,v$session s
+WHERE
+  l.ID1 = o.OBJECT_ID
+  AND s.SID =l.SID
+  AND l.TYPE in ('TM','TX');
+  
+  
+set linesize 150
+
+SELECT substr(DECODE(request,0,'Holder: ','Waiter: ')||l.sid,1,12) ||' Username: '||s.username sess,
+id1, id2, lmode, request, l.type, l.inst_id
+FROM GV$LOCK l,gv$session s
+WHERE (id1, id2, l.type) IN
+(SELECT id1, id2, type FROM GV$LOCK WHERE request>0)
+and l.sid = s.sid
+and l.inst_id = s.inst_id
+ORDER BY id1, request
+/

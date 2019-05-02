@@ -1,0 +1,69 @@
+PROBAR ENVIO MENSAJES DE TEXTO;
+
+1. Revision de cantidad de mensajes de texto por enviar
+SELECT count(1) FROM msj_texto WHERE mca_envio = 'N';
+                
+2. Revision de fecha de ultimo mensaje enviado o desde cuando no se envian mensajes
+SELECT min(FECHA_REGISTRO) FROM msj_texto WHERE mca_envio='N';
+
+3. De acuerdo a lo informado por el equipo de desarrollo solo importan los mensajes del dia, por lo cual se requiere actualizar hasta la fecha presente
+update nasist.msj_texto set mca_envio='S' where trunc(fecha_registro)=trunc(sysdate-1) and mca_envio = 'N';
+
+4. se vuelve a ejecutar el paso 1
+
+5. ejecutar PLSL para forzar el envio de mensajes
+
+BEGIN
+  PKG_ENVIO_MENSAJE.p_envio_mensaje_asistencia;  
+END;
+
+select count(1) from msj_texto where trunc(fecha_registro)=trunc(sysdate-1) and mca_envio = 'N';
+
+
+PRA PROBAR EL ACCESO A LA URL
+
+wget http://api.masivapp.com/SmsHandlers/sendhandler.ashx?action=sendmessage
+
+select to_char(FECHA_REGISTRO,'HH24') from msj_texto WHERE mca_envio = 'N';
+
+
+select min(consecutivo) from msj_texto where mca_envio <>'S';
+
+select * from msj_texto;
+
+delete from msj_texto where consecutivo = 3304396
+select count(1) from msj_texto where consecutivo <= 3304396 and mca_envio='N';
+delete from msj_texto where consecutivo <= 3304396 and mca_envio='N';
+
+
+
+sys171
+10.1.5.25
+
+
+1. Revision de cantidad de mensajes de texto por enviar
+SELECT count(1) FROM msj_texto WHERE mca_envio = 'N';
+                
+2. Revision de fecha de ultimo mensaje enviado o desde cuando no se envian mensajes
+SELECT min(FECHA_REGISTRO) FROM msj_texto WHERE mca_envio='N';
+ 
+3. De acuerdo a lo informado por el equipo de desarrollo solo importan los mensajes del dia, por lo cual se requiere actualizar hasta la fecha presente
+
+update nasist.msj_texto set mca_envio='S' where trunc(fecha_registro)=trunc(sysdate-1) and mca_envio = 'N';
+ 
+4. se vuelve a ejecutar el paso 1
+ 
+5. ejecutar PLSL para forzar el envio de mensajes
+ 
+BEGIN
+  PKG_ENVIO_MENSAJE.p_envio_mensaje_asistencia;  
+END;
+ 
+select count(1) from msj_texto where trunc(fecha_registro)=trunc(sysdate-1) and mca_envio = 'N';
+ 
+ 
+PRA PROBAR EL ACCESO A LA URL
+ 
+wget http://api.masivapp.com/SmsHandlers/sendhandler.ashx?action=sendmessage
+ 
+select to_char(FECHA_REGISTRO,'HH24') from msj_texto WHERE mca_envio = 'N';
